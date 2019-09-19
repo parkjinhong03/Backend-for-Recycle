@@ -9,4 +9,10 @@ from Application.User.Signup.Email import method
 @api.route('/User/signup/email')
 class Email(Resource):
     def post(self):
-        return method.post()
+        return method.post1()
+
+
+@api.route('/User/signup/email/auth')
+class EmailAuth(Resource):
+    def post(self):
+        return method.post2()

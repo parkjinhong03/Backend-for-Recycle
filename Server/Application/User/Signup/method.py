@@ -16,6 +16,7 @@ def post():
     420 - 이미 등록된 이름
     421 - 이미 등록된 이메일
     422 - 이미 등록된 전화번호
+    200 - 성공
     '''
 
     name, email, phone, password = RequestParser.parser('name', 'email', 'phone', 'password')
@@ -54,4 +55,7 @@ def post():
     if data:
         return {"message": "이미 존재하는 전화번호임", "code": 422}, 422
 
-    return 'Hello world!'
+    sql = f'INSERT INTO userlog (name, email, phone, password) VALUES("{name}", "{email}", "{phone}", "{password}");'
+    cursor.execute(sql)
+
+    return {"message": "회원가입을 성공하였습니다.", "code": 200}, 200 

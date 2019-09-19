@@ -5,19 +5,38 @@ from db_connect import db, cursor
 import random
 
 
-def post():
+def post2():
     '''
-    이메일 인증을 위한 POST Method
+    이메일 인증 완료를 위한 POST Method
     :return: status code
-    410 - email을 입력하지 않음
-    411 - email에 공백이 포함됨
+    410 - email에 공백이 포함됨
+    411 - number에 공백이 포함되거나 정수형이 아님
+    403 - 인증 실패 (인증 번호가 다름)
+    200 - 인증 성공
+    '''
+    email, num = RequestParser.parser('email', 'num')
+
+    sql = f'SELECT random FROM emailauth WHERE email = "{email}"'
+    cursor.execute(sql)
+    real_num = int(cursor.fetchone()[0])
+
+    if int(num) == real_num:
+        return {"messgae": "인증에 성공하였습니다.", "code": 200}, 200
+    else:
+        return {"messgae": "인증에 실패햐였습니다.", "code": 403}, 403
+
+
+def post1():
+    '''
+    이메일 인증 요청을 위한 POST Method
+    :return: status code
+    410 - email에 공백이 포함됨
+    200 - 성공
     '''
     email = RequestParser.parser('email')[0]
 
-    if email == None:
-        return {"message": "이메일을 입력하지 않음", "code": 410}, 410
     if ' ' in email:
-        return {"message": "이메일에 공백이 포함됨", "code": 411}, 411
+        return {"message": "이메일에 공백이 포함됨", "code": 410}, 410
 
     num = random.randrange(10000, 100000)
 
@@ -29,6 +48,8 @@ def post():
     s.sendmail("richimous0719@gmail.com", email, msg.as_string())
     s.quit()
 
+    sql = f'DELETE FROM emailauth WHERE email = "{email}"'
+    cursor.execute(sql)
     sql = f'INSERT INTO emailauth (email, random) VALUES("{email}", {num})'
     cursor.execute(sql)
 
