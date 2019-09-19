@@ -3,10 +3,10 @@ import sys
 
 sys.path.append('/Server')
 from setting_api import real_api as api
-from Application.User.Signup import method
+from Application.User.Signup.Email import method
 
 
-@api.route('/User/signup')
-class Signup(Resource):
+@api.route('/User/signup/email')
+class Email(Resource):
     def post(self):
         return method.post()
