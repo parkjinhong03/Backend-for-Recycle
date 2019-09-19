@@ -21,6 +21,8 @@ def post2():
     real_num = int(cursor.fetchone()[0])
 
     if int(num) == real_num:
+        sql = f'UPDATE emailauth SET AuthStatus = 1 WHERE email = "{email}"'
+        cursor.execute(sql)
         return {"messgae": "인증에 성공하였습니다.", "code": 200}, 200
     else:
         return {"messgae": "인증에 실패햐였습니다.", "code": 403}, 403

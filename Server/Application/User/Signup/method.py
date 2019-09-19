@@ -10,6 +10,7 @@ def post():
     '''
     회원가입을 위한 POST Method
     :return: status code
+    403 - 이메일 인증이 되지 않은 상태임
     410 - 공백이 있음
     411 - email이 존재하지 않거나 형식이 잘못됨
     412 - phone 데이터가 정수형이 아니거나 문자열이 존재함
@@ -55,7 +56,18 @@ def post():
     if data:
         return {"message": "이미 존재하는 전화번호임", "code": 422}, 422
 
+    sql = f'SELECT * FROM emailauth WHERE email = "{email}"'
+    cursor.execute(sql)
+    AuthData = cursor.fetchone()
+    status_code = int(AuthData[2])
+
+    if status_code == 0:
+        return {"message": "이메일 인증을 완료하지 않은 상태임", "code": 403}, 403
+
+    if AuthData == None:
+        return {"message": "이메일 인증을 완료하지 않은 상태임", "code": 403}, 403
+
     sql = f'INSERT INTO userlog (name, email, phone, password) VALUES("{name}", "{email}", "{phone}", "{password}");'
     cursor.execute(sql)
 
-    return {"message": "회원가입을 성공하였습니다.", "code": 200}, 200 
+    return {"message": "회원가입을 성공하였습니다.", "code": 200}, 200
