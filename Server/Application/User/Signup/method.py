@@ -1,9 +1,14 @@
 from flask_restplus import reqparse
+from flask_jwt_extended import get_jwt_identity
 import RequestParser
 from db_connect import db, cursor
 import hashlib
 import smtplib
 from email.mime.text import MIMEText
+
+
+def put():
+    pass
 
 
 def post():
