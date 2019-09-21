@@ -7,6 +7,7 @@ app = Flask(__name__)
 api = Api(app, version='1.0', title='Re-cycle API', description='2019 공개 SW 개발자 대회 Backend API')
 
 app.config['JWT_SECRET_KEY'] = 'super-secret'
+app.config['SECRET_KEY'] = 'super-secret'
 
 jwt = JWTManager(app)
 

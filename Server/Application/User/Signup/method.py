@@ -8,8 +8,8 @@ from email.mime.text import MIMEText
 
 
 def put():
-    pass
-
+    _userName = get_jwt_identity()
+    print(_userName)
 
 def post():
     '''
