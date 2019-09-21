@@ -35,7 +35,7 @@ def post():
     sql2 = "CREATE TABLE emailauth  (" \
            "     email TEXT NOT NULL," \
            "     random INT(11) NOT NULL," \
-           "     phone BINARY(1) NOT NULL DEFAULT 0" \
+           "     AuthStatus BINARY(1) NOT NULL DEFAULT 0" \
            ")"
     try:
         cursor.execute(sql1)
