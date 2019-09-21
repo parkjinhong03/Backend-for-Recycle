@@ -25,6 +25,28 @@ def post():
     200 - 성공
     '''
 
+    sql1 = "CREATE TABLE userlog (" \
+           "     name TEXT NOT NULL," \
+           "     email TEXT NOT NULL," \
+           "     phone TEXT NOT NULL," \
+           "     password TEXT NOT NULL" \
+           ")"
+
+    sql2 = "CREATE TABLE emailauth  (" \
+           "     email TEXT NOT NULL," \
+           "     random INT(11) NOT NULL," \
+           "     phone BINARY(1) NOT NULL DEFAULT 0" \
+           ")"
+    try:
+        cursor.execute(sql1)
+    except:
+        pass
+
+    try:
+        cursor.execute(sql2)
+    except:
+        pass
+
     name, email, phone, password = RequestParser.parser('name', 'email', 'phone', 'password')
     data_list = [name, email, phone, password]
 
@@ -64,13 +86,15 @@ def post():
     sql = f'SELECT * FROM emailauth WHERE email = "{email}"'
     cursor.execute(sql)
     AuthData = cursor.fetchone()
+
+    if AuthData == None:
+        return {"message": "이메일 인증을 완료하지 않은 상태임", "code": 403}, 403
+
     status_code = int(AuthData[2])
 
     if status_code == 0:
         return {"message": "이메일 인증을 완료하지 않은 상태임", "code": 403}, 403
 
-    if AuthData == None:
-        return {"message": "이메일 인증을 완료하지 않은 상태임", "code": 403}, 403
 
     sql = f'INSERT INTO userlog (name, email, phone, password) VALUES("{name}", "{email}", "{phone}", "{password}");'
     cursor.execute(sql)

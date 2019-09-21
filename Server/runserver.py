@@ -19,4 +19,4 @@ from Application.User.Login.views import Login
 from Application.User.Login.Refresh.views import Refresh
 
 if __name__ == '__main__':
-    app.run(host="10.156.147.138", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

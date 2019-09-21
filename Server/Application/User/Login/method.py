@@ -13,6 +13,7 @@ def post():
     421 - 일치하지 않는 PW
     200 - 로그인 성공 및 JWT token 반환
     '''
+
     input_email, input_password = RequestParser.parser('email', 'password')
 
     if ' ' in input_email:
