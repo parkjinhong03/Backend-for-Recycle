@@ -18,6 +18,8 @@ from Application.User.Signup.views import Signup
 from Application.User.Signup.Email.views import Email,EmailAuth
 from Application.User.Login.views import Login
 from Application.User.Login.Refresh.views import Refresh
+from Application.Cloth.Search.random.views import Random
+from Application.Cloth.Image.views import Image
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

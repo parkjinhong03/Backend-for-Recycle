@@ -8,8 +8,28 @@ from email.mime.text import MIMEText
 
 
 def put():
+    '''
+    비밀번호 변경을 위한 PUT Method
+    :return: status code
+    401 - access_token을 headers에 포함하지 않았음
+    410 - 비밀번호 값이 서로 다름
+    422 - 잘못된 access_token을 줬음
+    200 - 성공
+    '''
     _userName = get_jwt_identity()
     print(_userName)
+
+    password, password_check = RequestParser.parser('password', 'password_check')
+    print(password, password_check)
+
+    if password_check != password:
+        return {"message": "비밀번호와 비밀번호 확인 값이 서로 다름", "code": 410}, 410
+
+    sql = f'UPDATE userlog SET password = "{password}" WHERE name = "{_userName}"'
+    cursor.execute(sql)
+
+    return {"message": "비밀번호 변경 성공", "code": 200}, 200
+
 
 def post():
     '''
