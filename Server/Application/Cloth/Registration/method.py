@@ -8,6 +8,42 @@ import werkzeug
 import os
 
 
+def delete(cloth_type):
+    '''
+    :param cloth_type:
+    :return: status code
+    200 - 제품 등록 취소 성공.
+    410 - {type} path에 Shirts, Shoes, Pants, Accessory 이외의 값을 줌
+    411 - swagger docs에 나와있는 대로 params을 전달해 주세요.
+    412 - 해당 url에 대해 제품이 존재하지 않거나 요청한 유저의 제품이 아님
+    '''
+
+    type_list = ['Shirts', 'Shoes', 'Pants', 'Accessory']
+    if cloth_type not in type_list:
+        return {"message": "{type} path에 Shirts, Shoes, Pants, Accessory 이외의 값을 줌", "code": 410}, 410
+
+    ImageUrl = str(RequestParser.parser('url')[0])
+
+    user_name = get_jwt_identity()
+
+    sql = f'SELECT * FROM {cloth_type}List WHERE User = "{user_name}" AND Url = "{ImageUrl}"'
+    cursor.execute(sql)
+    select_data = cursor.fetchone()
+    print(select_data)
+
+    if select_data is None:
+        return {"message": "해당 url에 대해 제품이 존재하지 않거나 요청한 유저의 제품이 아님", "code": 412}, 412
+
+    sql = f'DELETE FROM {cloth_type}List WHERE User = "{user_name}" AND Url = "{ImageUrl}"'
+    cursor.execute(sql)
+    db.commit()
+
+    path = f'Data/Image/{cloth_type}/{ImageUrl.split("/")[3]}'
+    os.remove(path)
+
+    return {"message": "제품 등록 취소 완료", "code": 200}, 200
+
+
 def post(cloth_type):
     '''
     옷을 등록하주는 POST Method
@@ -79,11 +115,7 @@ def post(cloth_type):
         '(User, Url, Title, Description, Price, Size, FirstDate, ImageNumber)' \
         f'VALUES("{user_name}", "{url}", "{cloth_title}", "{cloth_description}", "{cloth_price}", "{cloth_size}", "{first_date}", "{img_number}")'
     cursor.execute(sql)
-
-    sql = f'SELECT * FROM {cloth_type}List WHERE ImageNumber = {img_number}'
-    cursor.execute(sql)
     db.commit()
-    print(cursor.fetchone())
 
     audioFile.save(f"Data/Image/{cloth_type}/{img_number}.{file_type}")
 
