@@ -23,6 +23,7 @@ from Application.User.Login.Refresh.views import Refresh
 from Application.Cloth.Search.random.views import Random
 from Application.Cloth.Image.views import Image
 from Application.Cloth.Registration.views import Register
+from Application.Cloth.Search.Separation.views import Separation
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
