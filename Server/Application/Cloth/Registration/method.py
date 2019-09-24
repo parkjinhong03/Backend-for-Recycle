@@ -16,6 +16,8 @@ def post(cloth_type):
     411 - 전달한 파일의 확장자가 jpg, png 외의 파일임
     412 - price 값에 문자열이 포함되어있음
     413 - size 값으로 올바른 데이터을 넣지 않았음
+    414 - 매개변수로 주지 않은 값이 있음
+    200 - 제품 등록에 완료함
     '''
 
     type_list = ['Shirts', 'Shoes', 'Pants', 'Accessory']
@@ -26,6 +28,9 @@ def post(cloth_type):
 
     cloth_title, cloth_description, cloth_price, cloth_size, first_date = RequestParser.parser('title', 'description', 'price', 'size', 'first_date')
     print(user_name, cloth_title, cloth_description, cloth_price, cloth_size, first_date)
+
+    if None in [cloth_title, cloth_description, cloth_price, cloth_size, first_date]:
+        return {"message": "docs 문서에서 나온 parmas 들을 모두 주세용", "code": 414}, 414
 
     parse = reqparse.RequestParser()
     parse.add_argument('file', type=werkzeug.datastructures.FileStorage, location='files')
@@ -48,7 +53,10 @@ def post(cloth_type):
     file_list.sort()
     print(file_list)
 
-    img_number = len(file_list) + 1
+    img_number = 0
+    for i in file_list:
+        img_number = int(i.split('.')[0]) + 1
+
     url = f'Cloth/Image/{cloth_type}/{img_number}.{file_type}'
 
     for i in type_list:
@@ -67,10 +75,16 @@ def post(cloth_type):
         except:
             pass
 
-    sql = f'INSERT INTO {cloth_type}list ' \
-        '(User, Url, Title, Description, Price, Size, FirstDate, SellStatus, ImageNumber)' \
-        'VALUES()'
+    sql = f'INSERT INTO {cloth_type}List ' \
+        '(User, Url, Title, Description, Price, Size, FirstDate, ImageNumber)' \
+        f'VALUES("{user_name}", "{url}", "{cloth_title}", "{cloth_description}", "{cloth_price}", "{cloth_size}", "{first_date}", "{img_number}")'
+    cursor.execute(sql)
 
-    # audioFile.save(f"Data/Image/{cloth_type}/{img_number}.{file_type}")
+    sql = f'SELECT * FROM {cloth_type}List WHERE ImageNumber = {img_number}'
+    cursor.execute(sql)
+    db.commit()
+    print(cursor.fetchone())
 
-    return f'{cloth_type}'
+    audioFile.save(f"Data/Image/{cloth_type}/{img_number}.{file_type}")
+
+    return {"message": "제품 등록에 성공하였습니다", "code": 200}, 200
