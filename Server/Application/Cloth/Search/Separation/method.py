@@ -1,9 +1,11 @@
 from db_connect import db, cursor
+import random
 
 
 def get(cloth_type):
     return_dict = {}
     count = 1
+    middle_count = 1
 
     type_list = ['Shirts', 'Shoes', 'Pants', 'Accessory']
     if cloth_type not in type_list:
@@ -11,20 +13,48 @@ def get(cloth_type):
 
     sql = f'SELECT * FROM {cloth_type}List WHERE SellStatus = 0'
     cursor.execute(sql)
-    total_data = cursor.fetchall()
+    total_data = list(cursor.fetchall())
+
+    index_list = []
+    random_list = []
 
     for data in total_data:
-        specific_dict = {}
+        index_list.append(data[8])
 
-        specific_dict['name'] = data[0]
-        specific_dict['image_url'] = data[1]
-        specific_dict['title'] = data[2]
-        specific_dict['description'] = data[3]
-        specific_dict['price'] = data[4]
-        specific_dict['size'] = data[5]
-        specific_dict['first_date'] = data[6]
+    while True:
+        if not index_list:
+            break
+        random_data = random.choice(index_list)
+        random_list.append(random_data)
+        index_list.remove(random_data)
 
-        return_dict[count] = specific_dict
-        count += 1
+    print(len(random_list))
+
+    for term in range((len(random_list)-1) // 5 + 1):
+        return_middle_dict = {}
+        for index in random_list[term*5:term*5+4]:
+            print(index)
+            specific_dict = {}
+            data_list = []
+
+            for i in total_data:
+                if i[8] == index:
+                    data_list = i
+                    del i
+                    break
+
+            specific_dict['name'] = data_list[0]
+            specific_dict['image_url'] = data_list[1]
+            specific_dict['title'] = data_list[2]
+            specific_dict['description'] = data_list[3]
+            specific_dict['price'] = data_list[4]
+            specific_dict['size'] = data_list[5]
+            specific_dict['first_date'] = data_list[6]
+
+            return_middle_dict[count] = specific_dict
+            count += 1
+
+        return_dict[term+1] = return_middle_dict
+        count = 1
 
     return return_dict

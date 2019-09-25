@@ -26,7 +26,7 @@ search_response = api.model('search_type_response', {
 class Separation(Resource):
     @api.response(200, '해당 카테고리의 모든 옷 정보 반환 성공', search_response)
     @api.doc(
-        descripttion='원하는 카테고리의 모든 옷에 대한 정보를 반환해주는 API',
+        descripttion='원하는 카테고리의 옷에 대한 정보를 랜덤으로 반환해주는 API',
         responses={
             410: '{cloth_type} path에 Shirts, Shoes, Pants, Accessory 이외의 값을 줌'
         }
