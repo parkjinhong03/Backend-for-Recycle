@@ -5,7 +5,6 @@ import random
 def get(cloth_type):
     return_dict = {}
     count = 1
-    middle_count = 1
 
     type_list = ['Shirts', 'Shoes', 'Pants', 'Accessory']
     if cloth_type not in type_list:
@@ -28,12 +27,9 @@ def get(cloth_type):
         random_list.append(random_data)
         index_list.remove(random_data)
 
-    print(len(random_list))
-
     for term in range((len(random_list)-1) // 5 + 1):
         return_middle_dict = {}
-        for index in random_list[term*5:term*5+4]:
-            print(index)
+        for index in random_list[term*5:term*5+5]:
             specific_dict = {}
             data_list = []
 
