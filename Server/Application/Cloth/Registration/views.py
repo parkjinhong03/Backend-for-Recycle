@@ -15,7 +15,7 @@ post_parser.add_argument('title', type=str, required=True, help='등록할 옷�
 post_parser.add_argument('description', type=str, required=True, help='등록할 옷에 대한 추가 정보')
 post_parser.add_argument('price', type=int,  required=True, help='등록할 옷의 가격에 대한 정보')
 post_parser.add_argument('size', type=str, required=True, help='등록할 옷의 사이즈에 대한 정보')
-post_parser.add_argument('first_date', type=str, required=True, help='등록할 옷을 처음으로 구매한 날짜(YYYY년 MM월 DD일 형식으로 주기 바람)')
+post_parser.add_argument('first_date', type=int, required=True, help='등록할 옷을 처음으로 구매한 날짜(YYYYMMDD 형식으로 주게 하기 바람)')
 post_parser.add_argument('cloth_type', location='path', required=True, help='Cloth/Register/뒤의 경로에 넣는 값으로, Shirts, Shoes, Pants, Accessory 를 넣을 수 있다.')
 
 delete_parser = api.parser()

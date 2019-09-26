@@ -6,6 +6,7 @@ from flask_jwt_extended import get_jwt_identity
 from flask_restplus import reqparse
 import werkzeug
 import os
+import datetime
 
 
 def delete(cloth_type):
@@ -105,15 +106,17 @@ def post(cloth_type):
                'Size TEXT NOT NULL,' \
                'FirstDate INT(11) NOT NULL,' \
                'SellStatus BOOL DEFAULT 0 NOT NULL,' \
-               'ImageNumber INT(11) NOT NULL)'
+               'ImageNumber INT(11) NOT NULL,' \
+               'CreateData TEXT NOT NULL)'
         try:
             cursor.execute(sql)
         except:
             pass
 
+    now = datetime.datetime.now()
     sql = f'INSERT INTO {cloth_type}List ' \
-        '(User, Url, Title, Description, Price, Size, FirstDate, ImageNumber)' \
-        f'VALUES("{user_name}", "{url}", "{cloth_title}", "{cloth_description}", "{cloth_price}", "{cloth_size}", "{first_date}", "{img_number}")'
+        '(User, Url, Title, Description, Price, Size, FirstDate, ImageNumber, CreateData)' \
+        f'VALUES("{user_name}", "{url}", "{cloth_title}", "{cloth_description}", "{cloth_price}", "{cloth_size}", "{first_date}", "{img_number}", {now.strftime("%Y%m%d%H%M%S")})'
     cursor.execute(sql)
     db.commit()
 
