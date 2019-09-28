@@ -31,9 +31,40 @@ def post():
     except:
         return {"message": "존재하지 않는 ID 입니다.", "code": 420}, 420
 
-    if input_password == _password:
-        access_token = create_access_token(identity=_name)
-        refresh_token = create_refresh_token(identity=_name)
-        return {"message": "로그인에 성공하였습니다.", "access_token": access_token, "refresh_token": refresh_token, "code": 200}, 200
-    else:
+    if input_password != _password:
         return {"message": "일치하지 않는 PW 입니다.", "code": 421}, 421
+
+    access_token = create_access_token(identity=_name)
+    refresh_token = create_refresh_token(identity=_name)
+
+    sql = 'CREATE TABLE ReservationCancelData (' \
+          '    name TEXT NOT NULL,' \
+          '    url TEXT NOT NULL,' \
+          '    register_name TEXT NOT NULL,' \
+          '    register_title TEXT NOT NULL' \
+          ')'
+    try:
+        cursor.execute(sql)
+    except:
+        pass
+
+    sql = f'SELECT * FROM ReservationCancelData WHERE name = "{_name}"'
+    cursor.execute(sql)
+    cancel_data = list(cursor.fetchall())
+    cancel_dict = {}
+    count = 1
+
+    for i in cancel_data:
+        specific_dict = {}
+
+        specific_dict['name'] = i[2]
+        specific_dict['title'] = i[3]
+
+        cancel_dict[count] = specific_dict
+        count += 1
+
+    sql = f'DELETE FROM ReservationCancelData WHERE name = "{_name}"'
+    cursor.execute(sql)
+    db.commit()
+
+    return {"message": "로그인에 성공하였습니다.", "access_token": access_token, "refresh_token": refresh_token, "code": 200, "cancle": cancel_dict}, 200

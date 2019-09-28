@@ -89,7 +89,9 @@ def post():
 
     sql = 'CREATE TABLE ReservationData (' \
           '    name TEXT NOT NULL,' \
-          '    url TEXT NOT NULL' \
+          '    url TEXT NOT NULL,' \
+          '    register_name TEXT NOT NULL,' \
+          '    register_title TEXT NOT NULL' \
           ')'
     try:
         cursor.execute(sql)
@@ -101,7 +103,13 @@ def post():
     if cursor.fetchone() is not None:
         return {"message": "이미 예매한 제품입니다.", "code": 413}, 413
 
-    sql = f'INSERT INTO ReservationData (name, url) VALUES("{_user}", "{url}")'
+    sql = f'SELECT * FROM {str(url).split("/")[2]}List WHERE Url = "{url}"'
+    cursor.execute(sql)
+    data = cursor.fetchone()
+    register_name = data[0]
+    register_title = data[2]
+
+    sql = f'INSERT INTO ReservationData (name, url, register_name, register_title) VALUES("{_user}", "{url}", "{register_name}", "{register_title}")'
     cursor.execute(sql)
     db.commit()
 
