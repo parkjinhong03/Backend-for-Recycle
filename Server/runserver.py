@@ -26,6 +26,8 @@ from Application.Cloth.Registration.views import Register
 from Application.Cloth.Search.Separation.views import Separation
 from Application.Cloth.Search.Latest.views import Latest
 from Application.Cloth.Search.views import Input
+from Application.Cloth.Search.User.views import MyCloth
+from Application.Cloth.Reservation.views import Reservation
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

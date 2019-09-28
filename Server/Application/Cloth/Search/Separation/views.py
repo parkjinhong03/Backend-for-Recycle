@@ -22,7 +22,7 @@ search_response = api.model('search_type_response', {
 })
 
 
-@cloth_namespace.route('/Search/<string:cloth_type>')
+@cloth_namespace.route('/Type/<string:cloth_type>')
 class Separation(Resource):
     @api.response(200, '해당 카테고리의 모든 옷 정보 반환 성공', search_response)
     @api.doc(
