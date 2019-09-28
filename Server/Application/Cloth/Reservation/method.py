@@ -10,6 +10,31 @@ type_to_korea = {
 }
 
 
+def delete():
+    _user = get_jwt_identity()
+
+    url = str(RequestParser.parser('url')[0])
+
+    if url is None:
+        return {"message": "docs에 주어진 대로 모든 params를 전달해 주세요", "code": 410}, 410
+
+    if url.split('/')[0] != 'Cloth' or url.split('/')[1] != 'Image' or url.split('/')[2] not in ['Shirts', 'Shoes', 'Pants', 'Accessory']:
+        return {"message": "Cloth/Image/{type}/{filename} 형식의 URL을 주세요", "code": 411}, 411
+
+    sql = f'SELECT * FROM ReservationData WHERE url = "{url}" AND name = "{_user}"'
+    cursor.execute(sql)
+    delete_data = cursor.fetchone()
+
+    if delete_data is None:
+        return {"message": "해당 제품을 찜하지 않았습니다.", "code": 412}, 412
+
+    sql = f'DELETE FROM ReservationData WHERE name = "{_user}" AND url = "{url}"'
+    cursor.execute(sql)
+    db.commit()
+
+    return {"message": "제품 찜하기 취소 완료", "code": 200}, 200
+
+
 def get():
     _user = get_jwt_identity()
     print(_user)
