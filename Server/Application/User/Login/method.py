@@ -85,4 +85,22 @@ def post():
         cursor.execute(sql)
         db.commit()
 
+    sql = 'CREATE TABLE UserRank (' \
+          '    name TEXT NOT NULL,' \
+          '    rank TEXT NOT NULL' \
+          ')'
+    try:
+        cursor.execute(sql)
+        db.commit()
+    except:
+        pass
+
+    sql = f'SELECT * FROM UserRank WHERE name = "{_name}"'
+    cursor.execute(sql)
+
+    if cursor.fetchone() is None:
+        sql = f'INSERT INTO UserRank (name, rank) VALUES("{_name}", "Normal")'
+        cursor.execute(sql)
+        db.commit()
+
     return {"message": "로그인에 성공하였습니다.", "access_token": access_token, "refresh_token": refresh_token, "code": 200, "cancle": cancel_dict}, 200
