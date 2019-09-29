@@ -38,7 +38,7 @@ def post():
     403 - 이메일 인증이 되지 않은 상태임
     410 - 공백이 있음
     411 - email이 존재하지 않거나 형식이 잘못됨
-    412 - phone 데이터가 정수형이 아니거나 문자열이 존재함
+    412 - phone 데이터에 문자열이 존재하거나 형식이 잘못됨
     420 - 이미 등록된 이름
     421 - 이미 등록된 이메일
     422 - 이미 등록된 전화번호
@@ -80,7 +80,10 @@ def post():
     try:
         int(phone)
     except ValueError:
-        return {"message": "전화번호 값에 문자열이 존재하거나 정수가 아님", "code": 412}, 412
+        return {"message": "전화번호 값에 문자열이 존재하거나 형식이 잘못됨", "code": 412}, 412
+
+    if len(str(phone)) != 11:
+        return {"message": "전화번호 값에 문자열이 존재하거나 형식이 잘못됨", "code": 412}, 412
 
     # 420 예외처리
     sql = f'SELECT * FROM userlog WHERE name = "{name}"'

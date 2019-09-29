@@ -30,6 +30,7 @@ from Application.Cloth.Search.User.views import MyCloth
 from Application.Cloth.Reservation.views import Reservation
 from Application.Cloth.Basket.views import Basket
 from Application.User.Image.views import Image
+from Application.User.My.views import My
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
