@@ -15,7 +15,7 @@ def get():
     type_list = ['Shirts', 'Pants', 'Shoes', 'Accessory']
 
     for i in type_list:
-        sql = f'SELECT * FROM {i}List'
+        sql = f'SELECT * FROM {i}List WHERE SellStatus = 0'
         cursor.execute(sql)
         total_data = total_data + list(cursor.fetchall())
 

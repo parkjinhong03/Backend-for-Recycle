@@ -21,7 +21,7 @@ def get():
     except:
         pass
 
-    sql = f'SELECT * FROM UserLog WHERE name = "{_user}"'
+    sql = f'SELECT * FROM userlog WHERE name = "{_user}"'
     cursor.execute(sql)
     user_data = cursor.fetchone()
     email = str(user_data[1])
