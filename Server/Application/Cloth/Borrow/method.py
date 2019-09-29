@@ -123,4 +123,17 @@ def post():
     cursor.execute(sql)
     db.commit()
 
+    sql = f'SELECT * FROM ReservationData WHERE url = "{url}"'
+    cursor.execute(sql)
+    cancle_data = list(cursor.fetchall())
+
+    for i in cancle_data:
+        sql = f'INSERT INTO ReservationCancelData (name, url, register_name, register_title) VALUES("{i[0]}", "{i[1]}", "{i[2]}", "{i[3]}")'
+        cursor.execute(sql)
+        db.commit()
+
+    sql = f'DELETE FROM ReservationData WHERE url = "{url}"'
+    cursor.execute(sql)
+    db.commit()
+
     return {"message": "해당 유저 아이디로 옷 빌려 입어보기 신청 완료", "code": 200}, 200

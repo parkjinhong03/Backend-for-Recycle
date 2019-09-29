@@ -35,6 +35,9 @@ def delete(cloth_type):
     if select_data is None:
         return {"message": "해당 url에 대해 제품이 존재하지 않거나 요청한 유저의 제품이 아님", "code": 412}, 412
 
+    if int(select_data[7]) == 1:
+        return {"message": "해당 url에 대한 제품은 이미 판매된 제품임", "code": 413}, 413
+
     sql = f'DELETE FROM {cloth_type}List WHERE User = "{user_name}" AND Url = "{ImageUrl}"'
     cursor.execute(sql)
     db.commit()

@@ -48,7 +48,8 @@ class Register(Resource):
             200: '제품 등록 취소 성공',
             410: '{type} path에 Shirts, Shoes, Pants, Accessory 이외의 값을 줌',
             411: 'swagger docs에 나와있는 대로 params을 전달해 주세요.',
-            412: '해당 url에 대해 제품이 존재하지 않거나 요청한 유저의 제품이 아님'
+            412: '해당 url에 대해 제품이 존재하지 않거나 요청한 유저의 제품이 아님',
+            413: '해당 url에 대한 제품은 이미 판매된 제품임'
         }
     )
     @jwt_required
