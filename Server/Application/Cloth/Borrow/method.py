@@ -4,6 +4,42 @@ from flask_jwt_extended import get_jwt_identity
 import datetime
 
 
+def delete():
+    _user = get_jwt_identity()
+
+    url = RequestParser.parser('url')[0]
+    if url is None:
+        return {"message": "url값을 내놓으란 말이다!!!", "code": 410}, 410
+
+    try:
+        sql = f'SELECT * FROM {str(url).split("/")[2]}List WHERE Url = "{url}"'
+        cursor.execute(sql)
+        cloth_data = cursor.fetchone()
+    except:
+        return {"message": "url을 옳바른 형태로 건네주세요.", "code": 411}, 411
+
+    if cloth_data is None:
+        return {"message": "해당 제품이 존재하지 않습니다.", "code": 412}, 412
+
+    sql = f'SELECT * FROM BorrowData WHERE name = "{_user}" AND url = "{url}"'
+    cursor.execute(sql)
+    borrow_data = cursor.fetchone()
+    print(borrow_data)
+
+    if borrow_data is None:
+        return {"message": "해당 제품을 빌린 적이 없습니다", "code": 413}, 413
+
+    sql = f'UPDATE BorrowData SET ReturnStatus = 1 WHERE url = "{url}"'
+    cursor.execute(sql)
+    db.commit()
+
+    sql = f'UPDATE {str(url).split("/")[2]}List SET SellStatus = 0 WHERE Url = "{url}"'
+    cursor.execute(sql)
+    db.commit()
+
+    return {"message": "해당 제품 반납 성공", "code": 200}, 200
+
+
 def post():
     sql = 'CREATE TABLE BorrowData (' \
           '    name TEXT NOT NULL,' \
@@ -35,10 +71,10 @@ def post():
         return {"message": "url을 옳바른 형태로 건네주세요.", "code": 411}, 411
 
     if cloth_data is None:
-        return {"message": "해당 제품이 존재하지 않습니다.", "code": 411}, 411
+        return {"message": "해당 제품이 존재하지 않습니다.", "code": 412}, 412
 
     if int(cloth_data[7]) != 0:
-        return {"message": "해당 제품을 빌릴 수 없는 상태입니다.", "code": 412}, 412
+        return {"message": "해당 제품을 빌릴 수 없는 상태입니다.", "code": 413}, 413
 
     sql = f'SELECT * FROM UserRank'
     cursor.execute(sql)
@@ -83,7 +119,7 @@ def post():
     cursor.execute(sql)
     db.commit()
 
-    sql = f'UPDATE {str(url).split("/")[2]}List SET SellStatus = 1 WHERE url = "{url}"'
+    sql = f'UPDATE {str(url).split("/")[2]}List SET SellStatus = 1 WHERE Url = "{url}"'
     cursor.execute(sql)
     db.commit()
 

@@ -12,6 +12,10 @@ post_parser = api.parser()
 post_parser.add_argument('JWT-Token', location='headers', required=True, help='회원 인증을 위해 User/login에서 받은 access_token을 Header에 포함해서 줘야함')
 post_parser.add_argument('url', required=True, help='빌릴 제품의 URL을 포함한다.')
 
+delete_parser = api.parser()
+delete_parser.add_argument('JWT-Token', location='headers', required=True, help='회원 인증을 위해 User/login에서 받은 access_token을 Header에 포함해서 줘야함')
+delete_parser.add_argument('url', required=True, help='반납할 제품의 URL을 포함한다.')
+
 
 @cloth_namespace.route('/Borrow')
 class Borrow(Resource):
@@ -30,3 +34,18 @@ class Borrow(Resource):
     @jwt_required
     def post(self):
         return method.post()
+
+    @api.doc(
+        description='빌린 제품을 반납할 때 호출하는 API로, JWT-token과 반납할 제품의 사진 URL을 건네 줘야 한다.',
+        responses={
+            200: '제품 반납 성공',
+            410: 'url 값을 주셔야죠!',
+            411: 'url을 옳바른 형태로 주지 않음',
+            412: '해당 제품이 존재하지 않습니다',
+            413: '해당 제품을 빌린 적이 없습니다'
+        }
+    )
+    @api.expect(delete_parser)
+    @jwt_required
+    def delete(self):
+        return method.delete()
