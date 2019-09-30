@@ -7,6 +7,7 @@ from flask_restplus import reqparse
 import werkzeug
 import os
 import datetime
+import base64
 
 
 def delete(cloth_type):
@@ -79,22 +80,11 @@ def post(cloth_type):
 
     user_name = get_jwt_identity()
 
-    cloth_title, cloth_description, cloth_price, cloth_size, first_date = RequestParser.parser('title', 'description', 'price', 'size', 'first_date')
+    cloth_title, cloth_description, cloth_price, cloth_size, first_date, binary = RequestParser.parser('title', 'description', 'price', 'size', 'first_date', 'binary')
     print(user_name, cloth_title, cloth_description, cloth_price, cloth_size, first_date)
 
     if None in [cloth_title, cloth_description, cloth_price, cloth_size, first_date]:
         return {"message": "docs 문서에서 나온 parmas 들을 모두 주세용", "code": 414}, 414
-
-    parse = reqparse.RequestParser()
-    parse.add_argument('file', type=werkzeug.datastructures.FileStorage, location='files')
-    args = parse.parse_args()
-    audioFile = args['file']
-
-    file_type = audioFile.filename.split('.')[1]
-
-    file_type_list = ['jpg', 'png']
-    if file_type not in file_type_list:
-        return {"message": "jpg 또는 png 확장자를 가진 파일을 보내지 않음", "code": 411}, 411
 
     try:
         int(cloth_price)
@@ -110,7 +100,7 @@ def post(cloth_type):
     for i in file_list:
         img_number = int(i.split('.')[0]) + 1
 
-    url = f'Cloth/Image/{cloth_type}/{img_number}.{file_type}'
+    url = f'Cloth/Image/{cloth_type}/{img_number}.png'
 
     for i in type_list:
         sql = f'CREATE TABLE {i}List (' \
@@ -136,6 +126,7 @@ def post(cloth_type):
     cursor.execute(sql)
     db.commit()
 
-    audioFile.save(f"Data/Image/{cloth_type}/{img_number}.{file_type}")
+    with open(f'Data/Image/{cloth_type}/{img_number}.png', 'wb') as f:
+        f.write(base64.b64decode(binary))
 
     return {"message": "제품 등록에 성공하였습니다", "code": 200}, 200

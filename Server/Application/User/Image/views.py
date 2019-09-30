@@ -10,7 +10,7 @@ cloth_namespace = api.namespace('User', description='APIs for Request users')
 
 post_parser = api.parser()
 post_parser.add_argument('JWT-Token', location='headers', required=True, help='회원 인증을 위해 User/login에서 받은 access_token을 Header에 포함해서 줘야함')
-post_parser.add_argument('file', location='files', type='FileStorage', required=True, help='등록할 옷에 대한 사진(jpg, png만)')
+post_parser.add_argument('binary', type=str, required=True, help='등록할 이미지의 BASE64 인코딩 데이터를 건네줘야 한다.')
 
 
 @cloth_namespace.route('/Profile/<string:img_name>')
