@@ -34,6 +34,7 @@ from Application.User.My.views import My
 from Application.User.Rank.views import Rank
 from Application.Cloth.Borrow.views import Borrow
 from Application.Cloth.Buy.views import Buy
+from Application.User.Payment.views import Payment
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
