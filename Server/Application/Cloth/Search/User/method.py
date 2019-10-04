@@ -1,4 +1,4 @@
-from db_connect import cursor, db
+from db_connect import connect
 from flask_jwt_extended import get_jwt_identity
 
 type_to_korea = {
@@ -10,6 +10,7 @@ type_to_korea = {
 
 
 def get():
+    db, cursor = connect()
     return_dict = {}
     total_data = []
     _user = get_jwt_identity()
@@ -19,6 +20,7 @@ def get():
     cursor.execute(sql)
 
     if cursor.fetchone() is None:
+        db.close()
         return {"message": "해당 유저가 존재하지 않습니다.", "code": 410}, 410
 
     type_list = ['Shirts', 'Pants', 'Shoes', 'Accessory']
@@ -40,8 +42,10 @@ def get():
         specific_dict['size'] = count[5]
         specific_dict['first_date'] = count[6]
         specific_dict['sell_status'] = count[7]
+        specific_dict['status'] = count[10]
 
         return_dict[number_count] = specific_dict
         number_count += 1
 
+    db.close()
     return return_dict

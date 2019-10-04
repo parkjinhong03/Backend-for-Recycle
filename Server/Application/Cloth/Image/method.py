@@ -1,5 +1,5 @@
 import RequestParser
-from db_connect import db, cursor
+from db_connect import connect
 from flask import send_file
 
 

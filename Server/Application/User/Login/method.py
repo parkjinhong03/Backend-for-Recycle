@@ -1,6 +1,6 @@
 from flask_jwt_extended import create_access_token, create_refresh_token
 import RequestParser
-from db_connect import db, cursor
+from db_connect import connect
 
 
 def post():
@@ -14,11 +14,14 @@ def post():
     200 - 로그인 성공 및 JWT token 반환
     '''
 
+    db, cursor = connect()
     input_email, input_password = RequestParser.parser('email', 'password')
 
     if ' ' in input_email:
+        db.close()
         return {"message": "Email 값에 공백이 포함되어 있음", "code": 410}, 410
     if ' ' in input_password:
+        db.close()
         return {"messsage": "Password 값에 공백이 포함되어 있음", "code": 411}, 411
 
     sql = f'SELECT password, name FROM userlog WHERE email = "{input_email}"'
@@ -29,9 +32,11 @@ def post():
         _password = my_log_data[0]
         _name = my_log_data[1]
     except:
+        db.close()
         return {"message": "존재하지 않는 ID 입니다.", "code": 420}, 420
 
     if input_password != _password:
+        db.close()
         return {"message": "일치하지 않는 PW 입니다.", "code": 421}, 421
 
     access_token = create_access_token(identity=_name)
@@ -103,4 +108,5 @@ def post():
         cursor.execute(sql)
         db.commit()
 
+    db.close()
     return {"message": "로그인에 성공하였습니다.", "access_token": access_token, "refresh_token": refresh_token, "code": 200, "cancle": cancel_dict}, 200

@@ -1,9 +1,10 @@
-from db_connect import cursor, db
+from db_connect import connect
 from flask_jwt_extended import get_jwt_identity
 import datetime
 
 
 def get():
+    db, cursor = connect()
     _user = get_jwt_identity()
     return_data = []
     return_dict = {}
@@ -41,6 +42,7 @@ def get():
             specific_list.append(f'{return_day}일 지남')
 
         return_data.append(specific_list)
+        specific_list.append(data[10])
 
     sql = f'SELECT * FROM BuyData WHERE name = "{_user}"'
     cursor.execute(sql)
@@ -65,6 +67,7 @@ def get():
         specific_list.append("") # 반환 여부
         specific_list.append('구매') # 대여? & 구매?
         specific_list.append('')
+        specific_list.append(data[10]) # 상품 등록 일자
 
         return_data.append(specific_list)
 
@@ -84,8 +87,10 @@ def get():
         specific_dict['return_status'] = i[7]
         specific_dict['type'] = i[8]
         specific_dict['remain_time'] = i[9]
+        specific_dict['status'] = i[10]
 
         return_dict[count] = specific_dict
         count += 1
 
+    db.close()
     return return_dict

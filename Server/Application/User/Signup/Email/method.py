@@ -1,7 +1,7 @@
 import RequestParser
 import smtplib
 from email.mime.text import MIMEText
-from db_connect import db, cursor
+from db_connect import connect
 import random
 
 
@@ -14,6 +14,7 @@ def post2():
     403 - 인증 실패 (인증 번호가 다름)
     200 - 인증 성공
     '''
+    db, cursor = connect()
     email, num = RequestParser.parser('email', 'num')
 
     sql = f'SELECT random FROM emailauth WHERE email = "{email}"'
@@ -23,8 +24,10 @@ def post2():
     if int(num) == real_num:
         sql = f'UPDATE emailauth SET AuthStatus = 1 WHERE email = "{email}"'
         cursor.execute(sql)
+        db.close()
         return {"messgae": "인증에 성공하였습니다.", "code": 200}, 200
     else:
+        db.close()
         return {"messgae": "인증에 실패햐였습니다.", "code": 403}, 403
 
 
@@ -35,9 +38,11 @@ def post1():
     410 - email에 공백이 포함됨
     200 - 성공
     '''
+    db, cursor = connect()
     email = RequestParser.parser('email')[0]
 
     if ' ' in email:
+        db.close()
         return {"message": "이메일에 공백이 포함됨", "code": 410}, 410
 
     num = random.randrange(10000, 100000)
@@ -55,4 +60,5 @@ def post1():
     sql = f'INSERT INTO emailauth (email, random) VALUES("{email}", {num})'
     cursor.execute(sql)
 
+    db.close()
     return {"message": "이메일을 보냈으니 인증해 주세요", "code": 200}, 200

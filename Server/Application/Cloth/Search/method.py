@@ -1,5 +1,4 @@
-from db_connect import db, cursor
-
+from db_connect import connect
 type_to_korea = {
     'Shirts': '상의',
     'Pants': '하의',
@@ -9,6 +8,8 @@ type_to_korea = {
 
 
 def get(input):
+
+    db, cursor = connect()
     return_dict = {}
     total_data = []
     count = 1
@@ -32,8 +33,10 @@ def get(input):
             specific_dict['price'] = i[4]
             specific_dict['size'] = i[5]
             specific_dict['first_date'] = i[6]
+            specific_dict['status'] = i[10]
 
             return_dict[count] = specific_dict
             count += 1
 
+    db.close()
     return return_dict

@@ -1,4 +1,4 @@
-from db_connect import db, cursor
+from db_connect import connect
 import RequestParser
 
 type_to_korea = {
@@ -10,9 +10,11 @@ type_to_korea = {
 
 
 def get(type, img_name):
+    db, cursor = connect()
     type_list = ['Shirts', 'Shoes', 'Pants', 'Accessory']
 
     if type not in type_list:
+        db.close()
         return {"message": "{type} path에 Shirts, Shoes, Pants, Accessory 이외의 값을 줌", "code": 410}, 410
 
     sql = f'SELECT * FROM {type}List WHERE Url = "Cloth/Image/{type}/{img_name}"'
@@ -20,6 +22,7 @@ def get(type, img_name):
     cloth_data = cursor.fetchone()
 
     if cloth_data is None:
+        db.close()
         return {"message": "존재하지 않는 상품입니다", "code": 411}, 411
 
     return_dict = {}
@@ -33,5 +36,7 @@ def get(type, img_name):
     return_dict['size'] = cloth_data[5]
     return_dict['first_date'] = cloth_data[6]
     return_dict['sell_status'] = cloth_data[7]
+    return_dict['status'] = cloth_data[10]
 
+    db.close()
     return return_dict

@@ -1,8 +1,9 @@
 from flask_jwt_extended import get_jwt_identity
-from db_connect import cursor, db
+from db_connect import connect
 
 
 def get():
+    db, cursor = connect()
     return_dict = {}
 
     _user = get_jwt_identity()
@@ -43,4 +44,5 @@ def get():
     phone = phone_first + "-****-" + phone_last
     return_dict['phone'] = phone
 
+    db.close()
     return return_dict

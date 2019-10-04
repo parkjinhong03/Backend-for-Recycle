@@ -1,5 +1,5 @@
 import RequestParser
-from db_connect import db, cursor
+from db_connect import connect
 from flask_jwt_extended import get_jwt_identity
 from flask import send_file
 from flask_restplus import reqparse
@@ -13,6 +13,7 @@ def get(img_name):
 
 
 def post():
+    db, cursor = connect()
     _user = get_jwt_identity()
 
     img_data = str(RequestParser.parser('binary')[0])
@@ -48,5 +49,5 @@ def post():
 
         with open(f"Data/Profile/{str(profile_data[1]).split('/')[2].split('.')[0]}.png", 'wb') as f:
             f.write(base64.b64decode(img_data))
-
+    db.close()
     return {"message": "회원 사진 변경 완료", "code": 200}, 200

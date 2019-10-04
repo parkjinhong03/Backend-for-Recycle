@@ -1,14 +1,16 @@
-from db_connect import cursor, db
+from db_connect import connect
 import RequestParser
 from flask_jwt_extended import get_jwt_identity
 import datetime
 
 
 def delete():
+    db, cursor = connect()
     _user = get_jwt_identity()
 
     url = RequestParser.parser('url')[0]
     if url is None:
+        db.close()
         return {"message": "url값을 내놓으란 말이다!!!", "code": 410}, 410
 
     try:
@@ -16,9 +18,11 @@ def delete():
         cursor.execute(sql)
         cloth_data = cursor.fetchone()
     except:
+        db.close()
         return {"message": "url을 옳바른 형태로 건네주세요.", "code": 411}, 411
 
     if cloth_data is None:
+        db.close()
         return {"message": "해당 제품이 존재하지 않습니다.", "code": 412}, 412
 
     sql = f'SELECT * FROM BorrowData WHERE name = "{_user}" AND url = "{url}"'
@@ -27,6 +31,7 @@ def delete():
     print(borrow_data)
 
     if borrow_data is None:
+        db.close()
         return {"message": "해당 제품을 빌린 적이 없습니다", "code": 413}, 413
 
     sql = f'UPDATE BorrowData SET ReturnStatus = 1 WHERE url = "{url}"'
@@ -37,10 +42,12 @@ def delete():
     cursor.execute(sql)
     db.commit()
 
+    db.close()
     return {"message": "해당 제품 반납 성공", "code": 200}, 200
 
 
 def post():
+    db, cursor = connect()
     sql = 'CREATE TABLE BorrowData (' \
           '    name TEXT NOT NULL,' \
           '    url TEXT NOT NULL,' \
@@ -60,6 +67,7 @@ def post():
     url = RequestParser.parser('url')[0]
 
     if url is None:
+        db.close()
         return {"message": "url값을 내놓으란 말이다!!!", "code": 410}, 410
 
 
@@ -68,12 +76,15 @@ def post():
         cursor.execute(sql)
         cloth_data = cursor.fetchone()
     except:
+        db.close()
         return {"message": "url을 옳바른 형태로 건네주세요.", "code": 411}, 411
 
     if cloth_data is None:
+        db.close()
         return {"message": "해당 제품이 존재하지 않습니다.", "code": 412}, 412
 
     if int(cloth_data[7]) != 0:
+        db.close()
         return {"message": "해당 제품을 빌릴 수 없는 상태입니다.", "code": 413}, 413
 
     sql = f'SELECT * FROM UserRank'
@@ -102,6 +113,7 @@ def post():
     print(rank_number[user_rank])
 
     if borrow_count >= rank_number[user_rank]:
+        db.close()
         return {"message": "해당 회원이 이번 달에 빌릴수 있는 옷의 갯수가 초과되었습니다.", "code": 414}, 414
 
     if int(now.month) <= 8:
@@ -136,4 +148,5 @@ def post():
     cursor.execute(sql)
     db.commit()
 
+    db.close()
     return {"message": "해당 유저 아이디로 옷 빌려 입어보기 신청 완료", "code": 200}, 200

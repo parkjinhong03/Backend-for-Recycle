@@ -1,5 +1,5 @@
 import RequestParser
-from db_connect import db, cursor
+from db_connect import connect
 from flask import send_file
 import random
 
@@ -12,6 +12,7 @@ type_to_korea = {
 
 
 def get():
+    db, cursor = connect()
     return_dict = {}
 
     type_list = ['Shirts', 'Pants', 'Shoes', 'Accessory']
@@ -37,6 +38,7 @@ def get():
         specific_dict['price'] = random_data[4]
         specific_dict['size'] = random_data[5]
         specific_dict['first_date'] = random_data[6]
+        specific_dict['status'] = random_data[10]
 
         count = 0
         for j in total_data:
@@ -48,4 +50,5 @@ def get():
 
         return_dict[i+1] = specific_dict
 
+    db.close()
     return return_dict

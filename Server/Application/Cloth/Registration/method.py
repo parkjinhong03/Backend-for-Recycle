@@ -1,5 +1,5 @@
 import RequestParser
-from db_connect import db, cursor
+from db_connect import connect
 from flask import request
 from werkzeug import security
 from flask_jwt_extended import get_jwt_identity
@@ -20,6 +20,7 @@ def delete(cloth_type):
     412 - 해당 url에 대해 제품이 존재하지 않거나 요청한 유저의 제품이 아님
     '''
 
+    db, cursor = connect()
     type_list = ['Shirts', 'Shoes', 'Pants', 'Accessory']
     if cloth_type not in type_list:
         return {"message": "{type} path에 Shirts, Shoes, Pants, Accessory 이외의 값을 줌", "code": 410}, 410
@@ -74,21 +75,25 @@ def post(cloth_type):
     200 - 제품 등록에 완료함
     '''
 
+    db, cursor = connect()
     type_list = ['Shirts', 'Shoes', 'Pants', 'Accessory']
     if cloth_type not in type_list:
+        db.close()
         return {"message": "{type} path에 Shirts, Shoes, Pants, Accessory 이외의 값을 줌", "code": 410}, 410
 
     user_name = get_jwt_identity()
 
-    cloth_title, cloth_description, cloth_price, cloth_size, first_date, binary = RequestParser.parser('title', 'description', 'price', 'size', 'first_date', 'binary')
+    cloth_title, cloth_description, cloth_price, cloth_size, first_date, status, binary = RequestParser.parser('title', 'description', 'price', 'size', 'first_date', 'status', 'binary')
     print(user_name, cloth_title, cloth_description, cloth_price, cloth_size, first_date)
 
-    if None in [cloth_title, cloth_description, cloth_price, cloth_size, first_date]:
+    if None in [cloth_title, cloth_description, cloth_price, cloth_size, first_date, status]:
+        db.close()
         return {"message": "docs 문서에서 나온 parmas 들을 모두 주세용", "code": 414}, 414
 
     try:
         int(cloth_price)
     except ValueError:
+        db.close()
         return {"message": "price 값에 문자열이 포함되어있음.", "code": 412}, 412
 
     path_dir = f'Data/Image/{cloth_type}'
@@ -113,7 +118,9 @@ def post(cloth_type):
                'FirstDate INT(11) NOT NULL,' \
                'SellStatus BOOL DEFAULT 0 NOT NULL,' \
                'ImageNumber INT(11) NOT NULL,' \
-               'CreateData TEXT NOT NULL)'
+               'CreateData TEXT NOT NULL,' \
+               'Status varchar(100) NOT NULL' \
+               ')'
         try:
             cursor.execute(sql)
         except:
@@ -121,12 +128,13 @@ def post(cloth_type):
 
     now = datetime.datetime.now()
     sql = f'INSERT INTO {cloth_type}List ' \
-        '(User, Url, Title, Description, Price, Size, FirstDate, ImageNumber, CreateData)' \
-        f'VALUES("{user_name}", "{url}", "{cloth_title}", "{cloth_description}", "{cloth_price}", "{cloth_size}", "{first_date}", "{img_number}", {now.strftime("%Y%m%d%H%M%S")})'
+        '(User, Url, Title, Description, Price, Size, FirstDate, ImageNumber, CreateData, Status)' \
+        f'VALUES("{user_name}", "{url}", "{cloth_title}", "{cloth_description}", "{cloth_price}", "{cloth_size}", "{first_date}", "{img_number}", {now.strftime("%Y%m%d%H%M%S")}, "{status}")'
     cursor.execute(sql)
     db.commit()
 
     with open(f'Data/Image/{cloth_type}/{img_number}.png', 'wb') as f:
         f.write(base64.b64decode(binary))
 
+    db.close()
     return {"message": "제품 등록에 성공하였습니다", "code": 200}, 200

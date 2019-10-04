@@ -1,13 +1,15 @@
-from db_connect import db, cursor
+from db_connect import connect
 import random
 
 
 def get(cloth_type):
+    db, cursor = connect()
     return_dict = {}
     count = 1
 
     type_list = ['Shirts', 'Shoes', 'Pants', 'Accessory']
     if cloth_type not in type_list:
+        db.close()
         return {"message": "{type} path에 Shirts, Shoes, Pants, Accessory 이외의 값을 줌", "code": 410}, 410
 
     sql = f'SELECT * FROM {cloth_type}List WHERE SellStatus = 0'
@@ -46,6 +48,7 @@ def get(cloth_type):
             specific_dict['price'] = data_list[4]
             specific_dict['size'] = data_list[5]
             specific_dict['first_date'] = data_list[6]
+            specific_dict['status'] = data_list[10]
 
             return_middle_dict[count] = specific_dict
             count += 1
@@ -53,4 +56,5 @@ def get(cloth_type):
         return_dict[term+1] = return_middle_dict
         count = 1
 
+    db.close()
     return return_dict
